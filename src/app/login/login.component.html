@@ -1,0 +1,18 @@
+<p>login works!</p>
+<h1 mat-dialog-title>Login form</h1>
+<form [formGroup]="profileForm">
+  <mat-form-field class="">
+    <mat-label>User name</mat-label>
+    <input matInput #username maxlength="256" type = "string" placeholder="password"  formControlName="username">
+    <mat-hint align="start"><strong>Any name</strong> </mat-hint>
+  </mat-form-field>
+  <mat-form-field class="">
+    <mat-label>Password</mat-label>
+    <input matInput #password1 maxlength="256" type = "password" placeholder="password" formControlName="password">
+    <mat-hint align="start"><strong>a strong password</strong> </mat-hint>
+  </mat-form-field>
+
+</form>
+<!-- <button mat-button [mat-dialog-close]=  cdkFocusInitial>Ok</button> -->
+<button mat-button (click)="cancel()">Cancel</button>
+<button mat-button (click)="save()">Login</button>
