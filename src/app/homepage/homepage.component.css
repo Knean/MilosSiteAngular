@@ -1,0 +1,33 @@
+
+.tab_item{
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  background-color:rgb(159, 159, 159) ;
+
+}
+
+.tab_item_selected{
+  background:white;
+}
+.tab_bar{
+  display: flex;
+  justify-content: space-around
+}
+.content{
+  display: none
+}
+.selected{
+  display: block
+}
+
+.hidden{
+  display: none
+}
+.loaderHolder{
+
+  display:flex;
+  align-items: center;
+  height: 65vh;
+  border: solid black
+}

@@ -17,6 +17,12 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RegisterComponent } from './register/register.component';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import { TreeDirectiveDirective } from './tree-directive.directive';
+import { PurchaseComponent } from './purchase/purchase.component';
+import {MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,8 +30,10 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     TreeComponent,
     LoginComponent,
     RegisterComponent,
-
+    TreeDirectiveDirective,
+    PurchaseComponent,
   ],
+
   imports: [
     MatTabsModule,
     BrowserModule,
@@ -40,8 +48,12 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatDialogModule,
     ReactiveFormsModule,
     FormsModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatProgressSpinnerModule,
+    MatSidenavModule,
+    FontAwesomeModule
   ],
+
   providers: [],
   bootstrap: [AppComponent]
 })

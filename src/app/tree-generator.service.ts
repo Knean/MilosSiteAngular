@@ -1,79 +1,27 @@
-import { Component, OnInit, AfterViewInit, AfterContentInit, Input } from '@angular/core';
-import { AuthenticationService } from '../authentication.service';
-import { User } from '../user';
-import { Node } from '../node';
-import { TreeGeneratorService } from '../tree-generator.service';
-declare const ReconnectingWebSocket: any;
-declare const d3: any;
-
-
-@Component({
-  selector: 'app-tree',
-  templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.css']
+import { Injectable } from '@angular/core';
+import { User } from './user';
+import { Node } from './node';
+declare const d3:any;
+@Injectable({
+  providedIn: 'root'
 })
-export class TreeComponent implements OnInit, AfterViewInit {
+export class TreeGeneratorService {
 
-  constructor(
-    public auth: AuthenticationService,
-    public tree_service: TreeGeneratorService) { }
-  //public data: any[]
-  public users: User[]
-  update: void;
-  name: string;
-  @Input() data: Node[];
-  @Input() index:number;
+  constructor() { }
 
-  ngOnInit(): void {
-    console.log(this.data, " its the mofoking data")
-    this.auth.userList.subscribe(dataResponse => {
-
-      this.users = dataResponse
-
-
-      console.log(this.users, "this is the users data form subscription")
-    })
-    this.name = this.data.length.toString()
-
-  }
-  ngAfterViewInit(): void {
-
-    /* setTimeout(() => {
-      var dims = { height: 1400, width: 800 };
-      var svg = d3.selectAll(".canvas")
-        .append('svg')
-        .attr('width', dims.width + 100)
-        .attr('height', dims.height + 100);
-      var graph = this.tree_service.generateTree(this.users,this.data);
-      console.log(graph.node(), " nodes")
-      svg.append(()=>graph.node())
-      svg.append(()=>graph.node())
-    }, 0); */
-
-  }
-
-}
-//setTimeout(() => {
-/*   var graph
-    var svg
-    const dims = { height: 1400, width: 800 };
-    svg = d3.selectAll(".canvas")
-      .append('svg')
-      .attr('width', dims.width + 100)
-      .attr('height', dims.height + 100);
+  public generateTree(users:User[], data:Node[], width, height):any{
     //add the group element that will contain all the drawings of the graph
-
     //graph = svg.append('g').attr('transform', 'translate(50, 50)');
     var graph = d3.create('svg:g');
     var scale;
     scale = d3.scaleOrdinal(d3["schemeSet3"])
-      .domain(this.users.map((element) => element.username))
+      .domain(users.map((element) => element.username))
 
     graph.selectAll('.node').remove();
     graph.selectAll('.link').remove();
-    this.data.sort((a, b) => a.number - b.number)
-    this.data.sort((a, b) => a.number % 2 == 1 ? a.number - b.number : b.number - a.number)
-    console.log(this.data, "data before stratify")
+    data.sort((a, b) => a.number - b.number)
+    data.sort((a, b) => a.number % 2 == 1 ? a.number - b.number : b.number - a.number)
+    console.log(data, "data before stratify")
     // stratify the data
     var rootNode = d3.stratify()
       .id(function (d) {
@@ -82,9 +30,9 @@ export class TreeComponent implements OnInit, AfterViewInit {
       .parentId(function (d) {
         return d.parent;
       })
-      (this.data)
+      (data)
     //stratified data -> tree form data
-    var treeData = d3.tree().size([1400, 800])(rootNode)
+    var treeData = d3.tree().size([width * 0.97, height*0.75])(rootNode)
     //create the selection of nodes from the tree data descendants
     var nodes = graph.selectAll('.node')
       .data(treeData.descendants())
@@ -95,9 +43,9 @@ export class TreeComponent implements OnInit, AfterViewInit {
     // draw the links as path elements
     links.enter().append('path')
       .attr('stroke', 'blue')
-      .attr('d', d3.linkHorizontal()
-        .x(function (d) { return d.y; })
-        .y(function (d) { return d.x; }))
+      .attr('d', d3.linkVertical()
+        .x(function (d) { return d.x; })
+        .y(function (d) { return d.y; }))
       .attr('class', 'link')
       .attr('fill', 'none')
       .attr('stroke', d => d.target.data.hasOwnProperty('userName') ? scale(d.source.data.userName) : 'gray')////#aaa
@@ -107,8 +55,8 @@ export class TreeComponent implements OnInit, AfterViewInit {
     var enterNodes = nodes.enter().append('g')
       .attr('transform', (d, i, n) => {
         //rotates the tree
-        let x = d.y
-        let y = d.x
+        let x = d.x
+        let y = d.y
         return `translate(${x},${y})`
       })
       .attr('class', "node")
@@ -142,11 +90,8 @@ export class TreeComponent implements OnInit, AfterViewInit {
 
     graph.append("g")
       .attr("class", "userLegend")
-    graph.select(".userLegend").call(colorLegend) */
+    graph.select(".userLegend").call(colorLegend)
 
-//svg.append(()=>graph.node())
-//},0);
-
-  //}
-
-
+    return graph
+  }
+}

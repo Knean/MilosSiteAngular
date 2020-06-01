@@ -16,6 +16,7 @@ mario:User
   constructor(private http: HttpClient) { }
 
   public user = new BehaviorSubject<User>(null)
+  public userList = new BehaviorSubject<User[]>([])
 
   login(username, password) {
     let csrf = this.getCookie('csrftoken')
@@ -35,7 +36,9 @@ mario:User
 
 
   register(username, password) {
+
     this.http.post(this.getHost() + "auth/register/", { "username": username, "password": password })
+
       .subscribe(() => {
         this.login(username, password);
         this.get_user()
@@ -53,13 +56,16 @@ mario:User
       }
       else {
         this.user.next(null)
+        console.log("we got null for the user back ")
       }
     })
   }
 
-  get_users(): Observable<User[]> {
+  get_users(): void {
     let users: User[]
-    return this.http.get<User[]>(this.getHost() + "users/")
+    this.http.get<User[]>(this.getHost() + "users/").subscribe((data: User[])=>{
+      this.userList.next(data)
+    })
   }
 
   getCookie(name) {

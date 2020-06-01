@@ -1,0 +1,11 @@
+  <form class="example-form">
+    <mat-form-field class="example-full-width">
+      <mat-label>Amount</mat-label>
+      <input matInput #message maxlength="256" type="number" placeholder="999">
+      <mat-hint align="start"><strong>Numbers only</strong> </mat-hint>
+      <mat-hint align="end"> max 5000</mat-hint>
+    </mat-form-field>
+  </form>
+  <button (click)="save(message.value)" [disabled]="false" mat-raised-button>Buy</button>
+
+
