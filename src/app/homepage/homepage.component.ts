@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '../login/login.component';
 import { AuthenticationService } from '../authentication.service';
@@ -10,6 +10,10 @@ import { Node } from '../node';
 import { TreeGeneratorService } from '../tree-generator.service';
 import { MDCTabBar } from '@material/tab-bar';
 import { PurchaseComponent } from '../purchase/purchase.component';
+import { Subject, BehaviorSubject, interval, Subscription } from 'rxjs';
+import { debounce, skip, throttle, delay } from 'rxjs/operators';
+import {ThemePalette} from '@angular/material/core';
+import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 
 declare const d3: any;
 
@@ -18,30 +22,68 @@ declare const d3: any;
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.css']
 })
-export class HomepageComponent implements OnInit, AfterViewInit {
+export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
+  color: ThemePalette = 'primary';
+  mode: ProgressSpinnerMode = 'determinate';
+  value = 50;
+  allTrees: Node[][] = []
+  user: User;
+  users: User[]
+  index: number = 0
+  dataSubscription: Subscription
 
+  task: any;
+
+  public reload: Subject<any>
   constructor(
     public dialog: MatDialog,
     public auth: AuthenticationService,
     public purchase: PurchaseService,
     public data_service: DataReceptionService,
-    public tree_service: TreeGeneratorService
+    public tree_service: TreeGeneratorService,
+
+
   ) { }
   @HostListener('window:resize', ['$event'])
-  dostuff(){
-    console.log( "resized")
-    this.loading = true
-    setTimeout(() => {
-      d3.selectAll("svg").remove();
-      this.allTrees.forEach((tree, index)=>this.renderTree(this.allTrees[index],index))
-      this.loading = false;
-    }, 200);
+  dostuff() {
+        //this.allTrees.forEach((tree, index)=>this.renderTree(this.allTrees[index],index))
+        console.log("reload triggered by window size change")
+        this.reload.next("oh yea")
+      }
+
+/*
+//.pipe(
+  throttle(ev => interval(2000), { leading: true, trailing: true }),
+  ) */
+
+  ngOnInit(): void {
+
+
+    this.reload = new Subject()
+    this.reload.pipe(debounce(() => interval(2000))).subscribe(() => {
+     // d3.selectAll(".genericClass").select("svg").remove();
+        console.log("reload after debounce")
+        this.allTrees.forEach((tree, index) => this.renderTree(tree, index))
+
+    })
+    this.dataSubscription = this.data_service.tree_data.subscribe((result) => {
+      this.allTrees = result.sort((a, b) => b.length - a.length)
+      if (result.length > 0) {
+        console.log("data arrived ")
+        this.reload.next("reload baby")
+      }
+    })
+
+      //this.auth.user.next({username: "cumLord"})
+    this.auth.get_user();
+    this.auth.user.subscribe((result) => {
+      this.user = result
+    })
+    this.auth.userList.subscribe(dataResponse => {
+      this.users = dataResponse
+    })
   }
-  allTrees: Node[][] = []
-  user: User;
-  users: User[]
-  index: number = 0
-  loading: boolean = true;
+
 
   tabs: any[] = [
     {
@@ -67,38 +109,36 @@ export class HomepageComponent implements OnInit, AfterViewInit {
   ]
 
   selectTab(index) {
-    this.loading = true;
-    setTimeout(() => {
-      this.tabs.forEach(tab=>tab.selected = false)
-      console.log(this.tabs[index].name)
-      this.tabs[index].selected = true
-      this.loading = false
-    }, 0);
-
-      //this.loading= false;
-
-
+    this.tabs.forEach(tab => tab.selected = false)
+    this.tabs[index].selected = true
+    //this.loading= false;
   }
   renderTree(data, index): void {
-    console.log("#canvas-"+ index)
 
-      var dims = { height: 1000, width: 2000 };
+    var dims = { height: 1000, width: 2000 };
+    d3.select("#canvas-" + index).selectAll("*").remove()
+    console.log("removed svg ")
 
-      var svg = d3.select("#canvas-"+ index)
-        .append('svg')
-        .attr('width', window.innerWidth)
-        .attr('height', window.innerHeight*0.80);
-      //https://www.w3schools.com/jsref/dom_obj_all.asp
-      var graph = this.tree_service.generateTree(this.users, data, window.innerWidth, window.innerHeight);
-      svg.append(() => graph.node()).attr('transform', d => `translate(${10}, ${15})`);
+    //https://www.w3schools.com/jsref/dom_obj_all.asp
+    var graph = this.tree_service.generateTree(this.users, data, window.innerWidth, window.innerHeight);
+setTimeout(() => {
+  console.log("adding svg ")
+  var svg = d3.select("#canvas-" + index).append("svg")
+  .attr('width', window.innerWidth)
+  .attr('height', window.innerHeight * 0.80);
 
-    console.log(svg.empty())
+  svg.append(() => graph.node()).attr('transform', d => `translate(${10}, ${15})`);
+
+
+}, 1000);
+
 
   }
 
-delete(){
-  this.purchase.reset();
-}
+  delete() {
+    this.purchase.reset();
+
+  }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(LoginComponent, {
@@ -107,8 +147,6 @@ delete(){
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result, " this is the result");
-
     });
   }
 
@@ -129,47 +167,28 @@ delete(){
   logout(): void {
     this.auth.logout()
   }
-
-/*   buy(amount): void {
-    this.purchase.purchase(amount)
-  } */
   nameFunction() {
     return "a name"
   }
-  ngOnInit(): void {
 
-
-    //this.auth.user.next({username: "cumLord"})
-    this.auth.get_user();
-
-    this.auth.user.subscribe((result) => {
-      this.user = result
-    })
-    this.auth.userList.subscribe(dataResponse => {
-      this.users = dataResponse
-    })
-  }
 
   ngAfterViewInit(): void {
 
 
-    this.data_service.createConnection()
-    this.data_service.tree_data.subscribe((result) => {
-      this.loading = true;
-
-      this.allTrees = result
-      //this.renderTree(this.allTrees[this.index])
-      d3.selectAll("svg").remove();
-      setTimeout(() => {
-        result.forEach((tree, index)=>this.renderTree(this.allTrees[index],index))
-        this.loading = false;
-      }, 200);
-
-      //
 
 
+    this.data_service.task_data.subscribe((result) => {
+
+      this.task = result
+      //this.taskFraction = result.fraction * 100
 
     })
+    this.data_service.createConnection()
+
+
   }
+ngOnDestroy():void{
+  this.dataSubscription.unsubscribe()
+}
 
 }

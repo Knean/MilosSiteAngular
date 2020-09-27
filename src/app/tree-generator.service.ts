@@ -10,8 +10,11 @@ export class TreeGeneratorService {
   constructor() { }
 
   public generateTree(users:User[], data:Node[], width, height):any{
+    var height:any = height - 200
     //add the group element that will contain all the drawings of the graph
     //graph = svg.append('g').attr('transform', 'translate(50, 50)');
+    users = users.sort((a,b) => a.username.localeCompare(b.username))
+    console.log(users, "users ")
     var graph = d3.create('svg:g');
     var scale;
     scale = d3.scaleOrdinal(d3["schemeSet3"])
@@ -19,9 +22,25 @@ export class TreeGeneratorService {
 
     graph.selectAll('.node').remove();
     graph.selectAll('.link').remove();
+
+
     data.sort((a, b) => a.number - b.number)
-    data.sort((a, b) => a.number % 2 == 1 ? a.number - b.number : b.number - a.number)
-    console.log(data, "data before stratify")
+
+    let even = data.filter((a)=>a.number%2 == 0).sort((a,b)=>b.number - a .number)
+    let odd = data.filter((a)=>a.number%2 == 1).sort((a,b)=>a.number - b .number)
+
+    data = even.concat(odd)
+
+/*
+    data.sort((a, b) => a.number % 2 == 0 ?  b.number - a.number:0)
+
+    data.sort((a, b) => a.number % 2 == 1 ? a.number - b.number:0)
+ */
+
+
+
+    console.log(data, " data that is not sorted")
+    // this is broken !! sort on the serverside
     // stratify the data
     var rootNode = d3.stratify()
       .id(function (d) {
@@ -32,10 +51,21 @@ export class TreeGeneratorService {
       })
       (data)
     //stratified data -> tree form data
-    var treeData = d3.tree().size([width * 0.97, height*0.75])(rootNode)
+
+    //var treeData = d3.tree().size([width * 0.97, height*0.75])(rootNode)
+
     //create the selection of nodes from the tree data descendants
+/*
     var nodes = graph.selectAll('.node')
       .data(treeData.descendants())
+ */
+var nodes = graph.selectAll('.node')
+.data(data)
+
+/*
+var nodes2 = graph.selectAll('.node')
+.data(treeData.descendants())
+ */
 
     // save the links data from the stratified data
     var links = graph.selectAll('.link').data(rootNode.links())
@@ -44,8 +74,8 @@ export class TreeGeneratorService {
     links.enter().append('path')
       .attr('stroke', 'blue')
       .attr('d', d3.linkVertical()
-        .x(function (d) { return d.x; })
-        .y(function (d) { return d.y; }))
+        .x(function (d) { return d.data.x * width})
+        .y(function (d) { return d.data.y * height }))
       .attr('class', 'link')
       .attr('fill', 'none')
       .attr('stroke', d => d.target.data.hasOwnProperty('userName') ? scale(d.source.data.userName) : 'gray')////#aaa
@@ -55,15 +85,15 @@ export class TreeGeneratorService {
     var enterNodes = nodes.enter().append('g')
       .attr('transform', (d, i, n) => {
         //rotates the tree
-        let x = d.x
-        let y = d.y
+        let x = d.x *width
+        let y = d.y * height
         return `translate(${x},${y})`
       })
       .attr('class', "node")
 
     // draw rectangles in each node group
     var rectangles = enterNodes.append('rect')
-      .attr('fill', d => d.data.userName != null ? scale(d.data.userName) : 'gray')
+      .attr('fill', d => d.userName != null ? scale(d.userName) : 'gray')
       .attr('stroke', 'black')
       .attr('width', 30)//30
       .attr('height', 30)
@@ -73,12 +103,12 @@ export class TreeGeneratorService {
       console.log(d)
     })
     enterNodes.on("mouseenter", (d) => {
-      console.log(d)
+
     })
     // add text to each of the node groups
     enterNodes.append('text')
-      .text((d) => { return d.data.number })
-      .attr('fill', d => d.data.childrenMissing > 0 ? 'black' : "red")
+      .text((d) => { return d.number })
+      .attr('fill', d => d.childrenMissing > 0 ? 'black' : "red")
       .attr('transform', d => `translate(${2}, ${10})`);
 
     var colorLegend = d3.legendColor()

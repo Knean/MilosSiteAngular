@@ -29,5 +29,8 @@
   display:flex;
   align-items: center;
   height: 65vh;
-  border: solid black
+
+}
+.progressClass{
+  height: 100%
 }

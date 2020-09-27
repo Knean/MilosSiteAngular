@@ -19,10 +19,11 @@ mario:User
   public userList = new BehaviorSubject<User[]>([])
 
   login(username, password) {
+    console.log(username, password , " this form is not empty")
     let csrf = this.getCookie('csrftoken')
     let csrfheader = new HttpHeaders({ 'X-CSRFToken': csrf })
     console.log(this.getHost() + "auth/login/")
-    this.http.post(this.getHost() + "auth/login/", { "username": username, "password": password }, { headers: csrfheader }).
+    this.http.post(this.getHost() + "auth/login/", { "username": username, "password": password }).//, { headers: csrfheader }
       subscribe(() => this.get_user())
   }
   logout() {

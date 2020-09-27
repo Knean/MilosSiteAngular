@@ -11,6 +11,7 @@ export class PurchaseService {
 
   purchase(amount) {
     let csrf = this.auth.getCookie('csrftoken')
+    csrf = csrf == null? "something":csrf;
 
     let csrfheader = new HttpHeaders({ 'X-CSRFToken': csrf })
     console.log(this.auth.getHost() + "tree/buy/")

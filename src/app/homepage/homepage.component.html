@@ -17,26 +17,38 @@
     </div>
   </ng-template>
 
-  <button (click)="purchaseDialog()" style="margin: 10px;" color="basic" mat-raised-button
-    color="">Shop</button>
+  <button (click)="purchaseDialog()" style="margin: 10px;" color="basic" mat-raised-button color="">Shop</button>
 
-    <button mat-mini-fab color="basic" aria-label="Example icon button with a delete icon" style = "  margin-left: auto; " (click) = "delete()">
-      <mat-icon >delete</mat-icon>
-    </button>
+  <mat-progress-spinner   class="progressClass" [diameter]="46"
+    [value]="task?.fraction ? task.fraction * 100: 0">
+  </mat-progress-spinner>
+
+  <p style =" text-align: center; margin-left: auto;
+  margin-right: auto;"> {{task?.text}}</p>
+
+
+
+
+
+  <button mat-mini-fab color="basic" aria-label="Example icon button with a delete icon" style="  margin-left: auto; "
+    (click)="delete()">
+    <mat-icon>delete</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div class="tab_bar">
-  <button *ngFor="let tree of allTrees; index as i" class="tab_item" [class.tab_item_selected]= "tabs[i].selected" (click)=selectTab(i) mat-raised-button
-    color="">{{tabs[i].name}}</button>
+  <button *ngFor="let tree of allTrees; index as i" class="tab_item" [class.tab_item_selected]="tabs[i].selected"
+    (click)=selectTab(i) mat-raised-button color="">{{tabs[i].name}}</button>
 </div>
 
 <div *ngFor="let tree of allTrees; index as i" class="" [class.selected]="tabs[i].selected"
   [class.content]="!tabs[i].selected">
-  <div [attr.id]="'canvas-' + i"></div>
+  <div class="genericClass" [attr.id]="'canvas-' + i"></div>
 </div>
 
 
-
-<div class="fa-9x loaderHolder" [class.hidden]= "!loading" [class.loaderHolder] = "loading" >
-  <i class="fas fa-cog fa-spin" style= "margin:auto"></i>
+<!--
+<div class="fa-9x loaderHolder" [class.hidden]="!loading" [class.loaderHolder]="loading">
+  <i class="fas fa-cog fa-spin" style="margin:auto"></i>
 </div>
+ -->

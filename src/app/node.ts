@@ -7,4 +7,6 @@ export interface Node {
   child2Value:     number;
   childrenMissing: number;
   parent:          number | null;
+  x: number;
+  y: number;
 }
