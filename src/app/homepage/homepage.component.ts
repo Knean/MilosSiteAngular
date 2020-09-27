@@ -60,7 +60,8 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     this.reload = new Subject()
-    this.reload.pipe(debounce(() => interval(2000))).subscribe(() => {
+    //.pipe(debounce(() => interval(2000)))
+    this.reload.subscribe(() => {
      // d3.selectAll(".genericClass").select("svg").remove();
         console.log("reload after debounce")
         this.allTrees.forEach((tree, index) => this.renderTree(tree, index))
@@ -121,7 +122,7 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //https://www.w3schools.com/jsref/dom_obj_all.asp
     var graph = this.tree_service.generateTree(this.users, data, window.innerWidth, window.innerHeight);
-setTimeout(() => {
+
   console.log("adding svg ")
   var svg = d3.select("#canvas-" + index).append("svg")
   .attr('width', window.innerWidth)
@@ -130,7 +131,7 @@ setTimeout(() => {
   svg.append(() => graph.node()).attr('transform', d => `translate(${10}, ${15})`);
 
 
-}, 1000);
+
 
 
   }
