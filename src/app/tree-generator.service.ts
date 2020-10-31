@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { User } from './user';
 import { Node } from './node';
-declare const d3:any;
+/* declare const d3:any; */
+import * as d3 from 'd3'
 @Injectable({
   providedIn: 'root'
 })
@@ -10,6 +11,7 @@ export class TreeGeneratorService {
   constructor() { }
 
   public generateTree(users:User[], data:Node[], width, height):any{
+    d3.create
     var height:any = height - 200
     //add the group element that will contain all the drawings of the graph
     //graph = svg.append('g').attr('transform', 'translate(50, 50)');
@@ -43,10 +45,10 @@ export class TreeGeneratorService {
     // this is broken !! sort on the serverside
     // stratify the data
     var rootNode = d3.stratify()
-      .id(function (d) {
+      .id(function (d:any) {
         return d.number
       })
-      .parentId(function (d) {
+      .parentId(function (d:any) {
         return d.parent;
       })
       (data)

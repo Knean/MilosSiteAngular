@@ -15,7 +15,8 @@ import { debounce, skip, throttle, delay } from 'rxjs/operators';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 
-declare const d3: any;
+import * as d3 from 'd3'
+/* declare const d3: any; */
 
 @Component({
   selector: 'app-homepage',
@@ -61,12 +62,12 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.reload = new Subject()
     //.pipe(debounce(() => interval(2000)))
-    this.reload.subscribe(() => {
+    this.reload.pipe(debounce(() => interval(500))).subscribe(() => {
      // d3.selectAll(".genericClass").select("svg").remove();
         console.log("reload after debounce")
         this.allTrees.forEach((tree, index) => this.renderTree(tree, index))
-
     })
+
     this.dataSubscription = this.data_service.tree_data.subscribe((result) => {
       this.allTrees = result.sort((a, b) => b.length - a.length)
       if (result.length > 0) {
@@ -121,14 +122,20 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log("removed svg ")
 
     //https://www.w3schools.com/jsref/dom_obj_all.asp
-    var graph = this.tree_service.generateTree(this.users, data, window.innerWidth, window.innerHeight);
-
-  console.log("adding svg ")
-  var svg = d3.select("#canvas-" + index).append("svg")
-  .attr('width', window.innerWidth)
-  .attr('height', window.innerHeight * 0.80);
+    try{
+      var graph = this.tree_service.generateTree(this.users, data, window.innerWidth, window.innerHeight);
+      console.log("adding svg ")
+      var svg = d3.select("#canvas-" + index).append("svg")
+      .attr('width', window.innerWidth)
+      .attr('height', window.innerHeight * 0.80);
 
   svg.append(() => graph.node()).attr('transform', d => `translate(${10}, ${15})`);
+    }
+
+    catch{
+
+    }
+
 
 
 
