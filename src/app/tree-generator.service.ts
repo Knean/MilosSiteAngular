@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { User } from './user';
 import { Node } from './node';
-/* declare const d3:any; */
-import * as d3 from 'd3'
+ declare const d3:any;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -97,7 +97,7 @@ var nodes2 = graph.selectAll('.node')
     var rectangles = enterNodes.append('rect')
       .attr('fill', d => d.userName != null ? scale(d.userName) : 'gray')
       .attr('stroke', 'black')
-      .attr('width', 30)//30
+      .attr('width', 30)//d.spread * width + 30
       .attr('height', 30)
       .attr('transform', d => `translate(${-5}, ${-10})`).raise();
     // add a click event on each rectangle

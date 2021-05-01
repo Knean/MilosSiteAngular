@@ -15,8 +15,8 @@ import { debounce, skip, throttle, delay } from 'rxjs/operators';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
 
-import * as d3 from 'd3'
-/* declare const d3: any; */
+
+declare const d3: any;
 
 @Component({
   selector: 'app-homepage',

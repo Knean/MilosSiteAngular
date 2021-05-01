@@ -1,9 +1,9 @@
-import * as d3 from 'd3'
+
 
 /// <reference lib="webworker" />
 declare function importScripts(...urls: string[]): void;
 /* importScripts("https://d3js.org/d3.v5.min.js"); */
-//declare const d3: any;
+declare const d3: any
 function generateTree(users:User[], data:Node[], width, height):any{
   //add the group element that will contain all the drawings of the graph
   //graph = svg.append('g').attr('transform', 'translate(50, 50)');
