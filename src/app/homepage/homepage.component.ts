@@ -14,6 +14,7 @@ import { Subject, BehaviorSubject, interval, Subscription } from 'rxjs';
 import { debounce, skip, throttle, delay } from 'rxjs/operators';
 import {ThemePalette} from '@angular/material/core';
 import {ProgressSpinnerMode} from '@angular/material/progress-spinner';
+import { Tree } from '../tree';
 
 
 declare const d3: any;
@@ -27,7 +28,7 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
   color: ThemePalette = 'primary';
   mode: ProgressSpinnerMode = 'determinate';
   value = 50;
-  allTrees: Node[][] = []
+  allTrees: Tree[];
   user: User;
   users: User[]
   index: number = 0
@@ -65,14 +66,16 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reload.pipe(debounce(() => interval(500))).subscribe(() => {
      // d3.selectAll(".genericClass").select("svg").remove();
         console.log("reload after debounce")
-        this.allTrees.forEach((tree, index) => this.renderTree(tree, index))
+        this.allTrees.forEach((tree, index) => this.renderTree(tree, index, this.allTrees[0].users))
+        console.log("didnt crash yet")
     })
-
+//it should start failing from here
     this.dataSubscription = this.data_service.tree_data.subscribe((result) => {
-      this.allTrees = result.sort((a, b) => b.length - a.length)
+      this.allTrees = result.sort((a, b) => b.nodes.length - a.nodes.length)// why is this not failing
       if (result.length > 0) {
         console.log("data arrived ")
         this.reload.next("reload baby")
+        console.log("reload done")
       }
     })
 
@@ -115,7 +118,7 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tabs[index].selected = true
     //this.loading= false;
   }
-  renderTree(data, index): void {
+  renderTree(tree, index, users_list): void {
 
     var dims = { height: 1000, width: 2000 };
     d3.select("#canvas-" + index).selectAll("*").remove()
@@ -123,17 +126,24 @@ export class HomepageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //https://www.w3schools.com/jsref/dom_obj_all.asp
     try{
-      var graph = this.tree_service.generateTree(this.users, data, window.innerWidth, window.innerHeight);
+      var scale = d3.scaleOrdinal(d3["schemeSet3"])// share scale between different types of trees
+      .domain(users_list.sort())
+      var graph = this.tree_service.generateTree(users_list, tree.nodes, window.innerWidth * 0.97, window.innerHeight, scale);
+      var graph_blobs = this.tree_service.generateBlobTree(users_list, tree.blobs, window.innerWidth *0.97, window.innerHeight,scale);
+
       console.log("adding svg ")
       var svg = d3.select("#canvas-" + index).append("svg")
       .attr('width', window.innerWidth)
       .attr('height', window.innerHeight * 0.80);
 
   svg.append(() => graph.node()).attr('transform', d => `translate(${10}, ${15})`);
+  svg.append(() => graph_blobs.node()).attr('transform', d => `translate(${10}, ${15})`);
+
+  console.log("dunno")
     }
 
-    catch{
-
+    catch (e){
+console.log("failed to draw a tree: ", e.message)
     }
 
 

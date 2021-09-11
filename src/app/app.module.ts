@@ -23,6 +23,7 @@ import {MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {MatCardModule} from '@angular/material/card';
+import {MatSelectModule} from '@angular/material/select';
 @NgModule({
   declarations: [
     AppComponent,
@@ -52,7 +53,8 @@ import {MatCardModule} from '@angular/material/card';
     MatProgressSpinnerModule,
     MatSidenavModule,
     FontAwesomeModule,
-    MatCardModule
+    MatCardModule,
+    MatSelectModule
   ],
 
   providers: [],

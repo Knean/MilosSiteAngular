@@ -3,6 +3,7 @@ import { Observable, throwError, BehaviorSubject, Subject, Subscription, } from 
 import { Node } from './node';
 import { AuthenticationService } from './authentication.service';
 import { delay } from 'rxjs/operators';
+import { Tree } from './tree';
 declare const ReconnectingWebSocket: any;
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ declare const ReconnectingWebSocket: any;
 
 
 export class DataReceptionService {
-  public tree_data = new Subject<Node[][]>()
+  public tree_data = new Subject<Tree[]>()
   public task_data = new BehaviorSubject<any>({})
   constructor(private auth: AuthenticationService) { }
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormGroup, FormControl } from '@angular/forms';
-
+import { User } from '../user';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -16,7 +16,7 @@ export class RegisterComponent implements OnInit {
 
     private dialogRef: MatDialogRef<RegisterComponent>,
   ) { }
-
+  public users: User[]
   profileForm = new FormGroup({
     username: new FormControl(''),
     password: new FormControl(''),
@@ -33,7 +33,16 @@ export class RegisterComponent implements OnInit {
   cancel(){
     this.dialogRef.close()
   }
+  selected = "option-1"
   ngOnInit(): void {
+    this.auth.get_users()
+    this.auth.userList.subscribe(dataResponse => {
+
+      this.users = dataResponse
+
+
+      console.log(this.users, "this is the users data form subscription")
+    })
   }
 
 }

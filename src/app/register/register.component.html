@@ -17,6 +17,14 @@
     <input matInput #password1 maxlength="256" type = "password" placeholder="password" formControlName="password2">
     <mat-hint align="start"><strong>Repeat password</strong> </mat-hint>
   </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Refered by</mat-label>
+    <mat-select [(value)]="selected">
+      <mat-option>None</mat-option>
+      <mat-option *ngFor="let item of users" value={{item.username}}>{{item.username}}</mat-option>
+    </mat-select>
+
+  </mat-form-field>
 
 </form>
 <!-- <button mat-button [mat-dialog-close]=  cdkFocusInitial>Ok</button> -->
